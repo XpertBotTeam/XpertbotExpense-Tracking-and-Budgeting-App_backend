@@ -16,6 +16,7 @@ return new class extends Migration
         $table->unsignedBigInteger('user_id');
         $table->string('description');
         $table->decimal('amount', 10, 2);
+        $table->string('type');
         $table->timestamps();
 
         $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
