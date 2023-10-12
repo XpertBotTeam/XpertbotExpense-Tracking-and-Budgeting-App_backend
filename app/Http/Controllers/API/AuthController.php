@@ -64,6 +64,14 @@ public function login(Request $request){
         return response()->json(['status'=>true,'message' => 'User registered successfully', 'token' => $token]);
         }
     }
+    public function getUserDetails(Request $request)
+{
+    $user = $request->user(); 
+    return response()->json([
+        'username' => $user->name, 
+    ]);
+}
+
 
 }
 

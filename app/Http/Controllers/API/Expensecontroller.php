@@ -19,33 +19,7 @@ class Expensecontroller extends Controller
         $Expenses=Expense::paginate($per_page);
         return response()->json($Expenses);
     }
-    public function getExpensesLast30Days()
-    {
-        $thirtyDaysAgo = now()->subDays(30);
-        $totalExpenses = Expense::where('user_id', auth()->user()->id)
-            ->where('created_at', '>=', $thirtyDaysAgo)
-            ->sum('amount');
     
-        return response()->json(['total_expenses_last_30_days' => $totalExpenses]);
-    }
-    public function getExpensesofthisweek(){
-        $thisweek=now()->subDays(7);
-        $totalExpenses=Expense::where('user_id',auth()->user()->id)
-        ->where('created_at','>=',$thisweek)
-        ->sum('amount');
-        return response()->json(['total_expenses_this_week'=>$totalExpenses]);
-    }
-    public function todayExpenses()
-{
-    $today = now()->startOfDay();
-    $expenses = Expense::where('user_id', auth()->user()->id)
-        ->whereDate('created_at', $today)
-        ->sum('amount');
-
-    return response()->json([
-        'todayExpenses' => $expenses
-    ]);
-}
    /**
      * Store a newly created resource in storage.
      */
@@ -55,6 +29,45 @@ class Expensecontroller extends Controller
     $expense = Expense::create($validatedData);
     return response()->json($expense, 201);
     }
+    public function expensesToday()
+{
+    $today = now()->startOfDay();
+    $expenses = Expense::where('user_id', auth()->user()->id)
+        ->whereDate('created_at', $today)
+        ->get();
+
+    return response()->json(['expenses_today' => $expenses]);
+}
+public function expensesThisWeek()
+{
+    $thisWeek = now()->startOfWeek();
+    $expenses = Expense::where('user_id', auth()->user()->id)
+        ->where('created_at', '>=', $thisWeek)
+        ->get();
+
+    return response()->json(['expenses_this_week' => $expenses]);
+}
+public function expensesLast30Days()
+{
+    $thirtyDaysAgo = now()->subDays(30);
+    $expenses = Expense::where('user_id', auth()->user()->id)
+        ->where('created_at', '>=', $thirtyDaysAgo)
+        ->get();
+
+    return response()->json(['expenses_last_30_days' => $expenses]);
+}
+public function todayDeposits()
+{
+    $today = Carbon::now()->startOfDay();
+
+    // Calculate total deposits for today
+    $todayDeposits = Transaction::where('created_at', '>=', $today)
+        ->where('type', Transaction::TYPE_DEPOSIT)
+        ->sum('amount');
+
+    return response()->json(['todayDeposits' => $todayDeposits]);
+}
+
     /**
      * Display the specified resource.
      */
